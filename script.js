@@ -1,6 +1,7 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/tutuhayesi/edit?js,console
+// https://jsbin.com/layetuneqe/edit?js,console
+// old: https://jsbin.com/tutuhayesi/edit?js,console
 
 (function () {
    'use strict';
@@ -13,12 +14,12 @@
       : firstNotEqualTo(array.slice(1), value)
    );
 
-   const findStrategicBallot = function (cardinalPreferences, poll) {
+   const applyStrategyA = function (cardinalPreferences, poll) {
       const candidates = poll.map(
          (ignore, index) => index
       );
       console.log('candidates:', candidates);
-      const orderedPollTotals = [...new Set(poll)].toSorted(
+      const orderedPollTotals = poll.toSorted(
          (x, y) => y - x
       );
       console.log('orderedPollTotals:', orderedPollTotals);
@@ -47,9 +48,141 @@
       );
    };
 
+   const applyStrategyB = function (cardinalPreferences, poll, lastBallot) {
+      const candidates = poll.map(
+         (ignore, index) => index
+      );
+      console.log('candidates:', candidates);
+      const orderedPollTotals = poll.toSorted(
+         (x, y) => y - x
+      );
+      console.log('orderedPollTotals:', orderedPollTotals);
+      const topCandidates = candidates.filter(
+         (candidate) => poll[candidate] === orderedPollTotals[0]
+      );
+      console.log('topCandidates:', topCandidates);
+      const nextTopCandidates = candidates.filter(
+         (candidate) => poll[candidate] === orderedPollTotals[1]
+      );
+      console.log('nextTopCandidates:', nextTopCandidates);
+      const topCandPrefs = topCandidates.map(
+         (candidate) => cardinalPreferences[candidate]
+      ).toSorted(
+         (x, y) => y - x
+      );
+      console.log('topCandPrefs:', topCandPrefs);
+      const nextTopCandPrefs = nextTopCandidates.map(
+         (candidate) => cardinalPreferences[candidate]
+      ).toSorted(
+         (x, y) => y - x
+      );
+      console.log('nextTopCandPrefs:', nextTopCandPrefs);
+      const cutoffs = (
+         topCandidates.length > 1
+         ? [
+            topCandPrefs.reduce(
+               (totalSoFar, candPref, index) => totalSoFar + candPref * index,
+               0
+            ) / (topCandidates.length * (topCandidates.length - 1) / 2),
+            topCandPrefs.toReversed().reduce(
+               (totalSoFar, candPref, index) => totalSoFar + candPref * index,
+               0
+            ) / (topCandidates.length * (topCandidates.length - 1) / 2)
+         ]
+         : [
+            nextTopCandPrefs.reduce(
+               (totalSoFar, candPref) => totalSoFar + Math.min(topCandPrefs[0], candPref),
+               0
+            ) / nextTopCandidates.length,
+            nextTopCandPrefs.reduce(
+               (totalSoFar, candPref) => totalSoFar + Math.max(topCandPrefs[0], candPref),
+               0
+            ) / nextTopCandidates.length
+         ]
+      );
+      console.log('cutoffs:', cutoffs);
+      return candidates.map(
+         (candidate) => (
+            cutoffs.every(
+               (cutoff) => cardinalPreferences[candidate] <= cutoff
+            )
+            ? 0
+            : cutoffs.every(
+               (cutoff) => cardinalPreferences[candidate] >= cutoff
+            )
+            ? 1
+            : lastBallot[candidate]
+         )
+      );
+   };
+
+   const applyStrategyT = function (cardinalPreferences, poll) {
+      const candidates = poll.map(
+         (ignore, index) => index
+      );
+      console.log('candidates:', candidates);
+      const orderedPollTotals = poll.toSorted(
+         (x, y) => y - x
+      );
+      console.log('orderedPollTotals:', orderedPollTotals);
+      const topCandidates = candidates.filter(
+         (candidate) => poll[candidate] === orderedPollTotals[0]
+      );
+      console.log('topCandidates:', topCandidates);
+      const nextTopCandidates = candidates.filter(
+         (candidate) => poll[candidate] === orderedPollTotals[1]
+      );
+      console.log('nextTopCandidates:', nextTopCandidates);
+      const topCandPrefs = topCandidates.map(
+         (candidate) => cardinalPreferences[candidate]
+      ).toSorted(
+         (x, y) => y - x
+      );
+      console.log('topCandPrefs:', topCandPrefs);
+      const nextTopCandPrefs = nextTopCandidates.map(
+         (candidate) => cardinalPreferences[candidate]
+      ).toSorted(
+         (x, y) => y - x
+      );
+      console.log('nextTopCandPrefs:', nextTopCandPrefs);
+      const cutoffs = (
+         topCandidates.length > 1
+         ? [
+            topCandPrefs.reduce(
+               (totalSoFar, candPref, index) => totalSoFar + candPref * index,
+               0
+            ) / (topCandidates.length * (topCandidates.length - 1) / 2),
+            topCandPrefs.toReversed().reduce(
+               (totalSoFar, candPref, index) => totalSoFar + candPref * index,
+               0
+            ) / (topCandidates.length * (topCandidates.length - 1) / 2)
+         ]
+         : [
+            nextTopCandPrefs.reduce(
+               (totalSoFar, candPref) => totalSoFar + Math.min(topCandPrefs[0], candPref),
+               0
+            ) / nextTopCandidates.length,
+            nextTopCandPrefs.reduce(
+               (totalSoFar, candPref) => totalSoFar + Math.max(topCandPrefs[0], candPref),
+               0
+            ) / nextTopCandidates.length
+         ]
+      );
+      console.log('cutoffs:', cutoffs);
+      return candidates.map(
+         (candidate) => (
+            (cutoffs.every(
+               (cutoff) => cardinalPreferences[candidate] >= cutoff
+            ) && !cutoffs.every(
+               (cutoff) => cardinalPreferences[candidate] <= cutoff
+            ))
+            ? 1
+            : 0
+         )
+      );
+   };
+
    const numCandidates = 10;
-// const cardinalPreferences = [100, 20, 0];
-// const poll = [80, 65, 35];
    const cardinalPreferences = Array.from(
       {length: numCandidates},
       () => Math.floor(Math.random() * 101)
@@ -58,8 +191,14 @@
       {length: numCandidates},
       () => Math.floor(Math.random() * 11)
    );
+   const lastBallot = cardinalPreferences.map(() => 0.5);
    console.log('cardinalPreferences:', cardinalPreferences);
    console.log('poll:', poll);
-   const ballot = findStrategicBallot(cardinalPreferences, poll);
-   console.log('ballot:', ballot);
+   console.log('lastBallot:', lastBallot);
+   const ballotA = applyStrategyA(cardinalPreferences, poll);
+   console.log('ballotA:', ballotA);
+   const ballotB = applyStrategyB(cardinalPreferences, poll, lastBallot);
+   console.log('ballotB:', ballotB);
+   const ballotT = applyStrategyT(cardinalPreferences, poll);
+   console.log('ballotT:', ballotT);
 }());
