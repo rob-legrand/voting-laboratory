@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/layetuneqe/edit?js,console
-// old: https://jsbin.com/tutuhayesi/edit?js,console
+// https://jsbin.com/durayeseke/edit?js,console
+// old: https://jsbin.com/layetuneqe/edit?js,console
+// older: https://jsbin.com/tutuhayesi/edit?js,console
 
 (function () {
    'use strict';
@@ -15,6 +16,7 @@
    );
 
    const applyStrategyA = function (cardinalPreferences, poll) {
+      console.log('---------------------------');
       const candidates = poll.map(
          (ignore, index) => index
       );
@@ -25,7 +27,7 @@
       console.log('orderedPollTotals:', orderedPollTotals);
       const topCandidates = orderedPollTotals.map(
          (pollTotal) => candidates.filter(
-            (candidate) => poll[candidate] === pollTotal
+            (candidate) => poll[candidate] >= pollTotal
          )
       );
       console.log('topCandidates:', topCandidates);
@@ -49,6 +51,7 @@
    };
 
    const applyStrategyB = function (cardinalPreferences, poll, lastBallot) {
+      console.log('---------------------------');
       const candidates = poll.map(
          (ignore, index) => index
       );
@@ -117,6 +120,7 @@
    };
 
    const applyStrategyT = function (cardinalPreferences, poll) {
+      console.log('---------------------------');
       const candidates = poll.map(
          (ignore, index) => index
       );
@@ -182,6 +186,47 @@
       );
    };
 
+   const applyStrategyW = function (cardinalPreferences, poll) {
+      console.log('---------------------------');
+      const candidates = poll.map(
+         (ignore, index) => index
+      );
+      console.log('candidates:', candidates);
+      const orderedPollTotals = poll.toSorted(
+         (x, y) => y - x
+      );
+      console.log('orderedPollTotals:', orderedPollTotals);
+      const topCandidates = orderedPollTotals.map(
+         (pollTotal) => candidates.filter(
+            (candidate) => poll[candidate] >= pollTotal
+         )
+      );
+      console.log('topCandidates:', topCandidates);
+      const cutoffs = topCandidates.map(
+         (candidateSet) => candidateSet.reduce(
+            (totalSoFar, candidate) => totalSoFar + cardinalPreferences[candidate],
+            0
+         ) / candidateSet.length
+      );
+      console.log('cutoffs:', cutoffs);
+      return candidates.map(
+         (candidate) => (
+            cardinalPreferences[candidate] > firstNotEqualTo(
+               cutoffs.slice(
+                  topCandidates.findIndex(
+                     (candidateSet) => candidateSet.includes(
+                        candidate
+                     )
+                  )
+               ),
+               cardinalPreferences[candidate]
+            )
+            ? 1
+            : 0
+         )
+      );
+   };
+
    const numCandidates = 10;
    const cardinalPreferences = Array.from(
       {length: numCandidates},
@@ -195,10 +240,22 @@
    console.log('cardinalPreferences:', cardinalPreferences);
    console.log('poll:', poll);
    console.log('lastBallot:', lastBallot);
-   const ballotA = applyStrategyA(cardinalPreferences, poll);
+   const ballotA = applyStrategyA(cardinalPreferences, poll, lastBallot);
    console.log('ballotA:', ballotA);
    const ballotB = applyStrategyB(cardinalPreferences, poll, lastBallot);
    console.log('ballotB:', ballotB);
-   const ballotT = applyStrategyT(cardinalPreferences, poll);
+   const ballotT = applyStrategyT(cardinalPreferences, poll, lastBallot);
    console.log('ballotT:', ballotT);
+   const ballotW = applyStrategyW(cardinalPreferences, poll, lastBallot);
+   console.log('ballotW:', ballotW);
+   console.log('strategy W approves:', cardinalPreferences.filter(
+      (ignore, candidate) => ballotW[candidate] > 0.5
+   ).toSorted(
+      (x, y) => y - x
+   ));
+   console.log('strategy W disapproves:', cardinalPreferences.filter(
+      (ignore, candidate) => ballotW[candidate] < 0.5
+   ).toSorted(
+      (x, y) => y - x
+   ));
 }());
