@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/jebiputove/edit?js,console
-// old: https://jsbin.com/durayeseke/edit?js,console
+// https://jsbin.com/hedaluquce/edit?js,console
+// old: https://jsbin.com/jebiputove/edit?js,console
+// older: https://jsbin.com/durayeseke/edit?js,console
 // older: https://jsbin.com/layetuneqe/edit?js,console
 // older: https://jsbin.com/tutuhayesi/edit?js,console
 
@@ -51,157 +52,71 @@
       : defaultVote
    );
 
-   const applyStrategyA = function (cardinalPreferences, poll, lastBallot) {
+   const findStrategicBallot = function (args) {
       console.log('---------------------------');
-      const candidates = poll.map(
+      const candidates = args.poll.map(
          (ignore, index) => index
       );
       console.log('candidates:', candidates);
-      const orderedPollTotals = poll.toSorted(
+      const orderedPollTotals = args.poll.toSorted(
          (x, y) => y - x
       );
       console.log('orderedPollTotals:', orderedPollTotals);
       const topCandidates = orderedPollTotals.map(
          (pollTotal) => candidates.filter(
-            (candidate) => poll[candidate] >= pollTotal
+            (candidate) => args.poll[candidate] >= pollTotal
          )
       );
       console.log('topCandidates:', topCandidates);
-      const cutoffs = topCandidates.map(
-         (candidateSet) => calcAverage(
-            candidateSet.map(
-               (candidate) => cardinalPreferences[candidate]
+      const cutoffs = (
+         args.strategy === 'B'
+         ? [
+            topCandidates[1].map(
+               (candidate) => args.cardinalPreferences[candidate]
             )
-         )
-      );
-      console.log('cutoffs:', cutoffs);
-      return candidates.map(
-         (candidate) => decideApproval(
-            cardinalPreferences[candidate],
-            findDecisiveCutoff(
-               cutoffs,
-               cardinalPreferences[candidate]
+         ]
+         : args.strategy === 'T'
+         ? [
+            Math.max(
+               ...topCandidates[1].map(
+                  (candidate) => args.cardinalPreferences[candidate]
+               )
             ),
-            lastBallot[candidate]
-         )
-      );
-   };
-
-   const applyStrategyB = function (cardinalPreferences, poll, lastBallot) {
-      console.log('---------------------------');
-      const candidates = poll.map(
-         (ignore, index) => index
-      );
-      console.log('candidates:', candidates);
-      const orderedPollTotals = poll.toSorted(
-         (x, y) => y - x
-      );
-      console.log('orderedPollTotals:', orderedPollTotals);
-      const topCandidates = orderedPollTotals.map(
-         (pollTotal) => candidates.filter(
-            (candidate) => poll[candidate] >= pollTotal
-         )
-      );
-      console.log('topCandidates:', topCandidates);
-      const cutoffs = [
-         topCandidates[1].map(
-            (candidate) => cardinalPreferences[candidate]
-         )
-      ];
-      console.log('cutoffs:', cutoffs);
-      return candidates.map(
-         (candidate) => decideApproval(
-            cardinalPreferences[candidate],
-            findDecisiveCutoff(
-               cutoffs,
-               cardinalPreferences[candidate]
-            ),
-            lastBallot[candidate]
-         )
-      );
-   };
-
-   const applyStrategyT = function (cardinalPreferences, poll, lastBallot) {
-      console.log('---------------------------');
-      const candidates = poll.map(
-         (ignore, index) => index
-      );
-      console.log('candidates:', candidates);
-      const orderedPollTotals = poll.toSorted(
-         (x, y) => y - x
-      );
-      console.log('orderedPollTotals:', orderedPollTotals);
-      const topCandidates = orderedPollTotals.map(
-         (pollTotal) => candidates.filter(
-            (candidate) => poll[candidate] >= pollTotal
-         )
-      );
-      console.log('topCandidates:', topCandidates);
-      const cutoffs = [
-         Math.max(
-            ...topCandidates[1].map(
-               (candidate) => cardinalPreferences[candidate]
+            ...topCandidates.map(
+               (candidateSet) => calcAverage(
+                  candidateSet.map(
+                     (candidate) => args.cardinalPreferences[candidate]
+                  )
+               )
             )
-         ),
-         ...topCandidates.map(
+         ]
+         : topCandidates.map(
             (candidateSet) => calcAverage(
                candidateSet.map(
-                  (candidate) => cardinalPreferences[candidate]
+                  (candidate) => args.cardinalPreferences[candidate]
                )
             )
          )
-      ];
-      console.log('cutoffs:', cutoffs);
-      return candidates.map(
-         (candidate) => decideApproval(
-            cardinalPreferences[candidate],
-            findDecisiveCutoff(
-               cutoffs,
-               cardinalPreferences[candidate]
-            ),
-            lastBallot[candidate]
-         )
-      );
-   };
-
-   const applyStrategyW = function (cardinalPreferences, poll, lastBallot) {
-      console.log('---------------------------');
-      const candidates = poll.map(
-         (ignore, index) => index
-      );
-      console.log('candidates:', candidates);
-      const orderedPollTotals = poll.toSorted(
-         (x, y) => y - x
-      );
-      console.log('orderedPollTotals:', orderedPollTotals);
-      const topCandidates = orderedPollTotals.map(
-         (pollTotal) => candidates.filter(
-            (candidate) => poll[candidate] >= pollTotal
-         )
-      );
-      console.log('topCandidates:', topCandidates);
-      const cutoffs = topCandidates.map(
-         (candidateSet) => calcAverage(
-            candidateSet.map(
-               (candidate) => cardinalPreferences[candidate]
-            )
-         )
       );
       console.log('cutoffs:', cutoffs);
       return candidates.map(
          (candidate) => decideApproval(
-            cardinalPreferences[candidate],
+            args.cardinalPreferences[candidate],
             findDecisiveCutoff(
-               cutoffs.slice(
-                  topCandidates.findIndex(
-                     (candidateSet) => candidateSet.includes(
-                        candidate
+               (
+                  args.strategy === 'W'
+                  ? cutoffs.slice(
+                     topCandidates.findIndex(
+                        (candidateSet) => candidateSet.includes(
+                           candidate
+                        )
                      )
                   )
+                  : cutoffs
                ),
-               cardinalPreferences[candidate]
+               args.cardinalPreferences[candidate]
             ),
-            lastBallot[candidate]
+            args.lastBallot[candidate]
          )
       );
    };
@@ -219,13 +134,33 @@
    console.log('cardinalPreferences:', cardinalPreferences);
    console.log('poll:', poll);
    console.log('lastBallot:', lastBallot);
-   const ballotA = applyStrategyA(cardinalPreferences, poll, lastBallot);
+   const ballotA = findStrategicBallot({
+      strategy: 'A',
+      cardinalPreferences: cardinalPreferences,
+      poll: poll,
+      lastBallot: lastBallot
+   });
    console.log('ballotA:', ballotA);
-   const ballotB = applyStrategyB(cardinalPreferences, poll, lastBallot);
+   const ballotB = findStrategicBallot({
+      strategy: 'B',
+      cardinalPreferences: cardinalPreferences,
+      poll: poll,
+      lastBallot: lastBallot
+   });
    console.log('ballotB:', ballotB);
-   const ballotT = applyStrategyT(cardinalPreferences, poll, lastBallot);
+   const ballotT = findStrategicBallot({
+      strategy: 'T',
+      cardinalPreferences: cardinalPreferences,
+      poll: poll,
+      lastBallot: lastBallot
+   });
    console.log('ballotT:', ballotT);
-   const ballotW = applyStrategyW(cardinalPreferences, poll, lastBallot);
+   const ballotW = findStrategicBallot({
+      strategy: 'W',
+      cardinalPreferences: cardinalPreferences,
+      poll: poll,
+      lastBallot: lastBallot
+   });
    console.log('ballotW:', ballotW);
    console.log('strategy W approves:', cardinalPreferences.filter(
       (ignore, candidate) => ballotW[candidate] > 0.5
