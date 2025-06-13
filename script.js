@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/hedaluquce/edit?js,console
-// old: https://jsbin.com/jebiputove/edit?js,console
+// https://jsbin.com/siqasuxiyo/edit?js,console
+// old: https://jsbin.com/hedaluquce/edit?js,console
+// older: https://jsbin.com/jebiputove/edit?js,console
 // older: https://jsbin.com/durayeseke/edit?js,console
 // older: https://jsbin.com/layetuneqe/edit?js,console
 // older: https://jsbin.com/tutuhayesi/edit?js,console
@@ -75,6 +76,24 @@
                (candidate) => args.cardinalPreferences[candidate]
             )
          ]
+         : args.strategy === 'F'
+         ? [
+            Math.max(
+               ...args.cardinalPreferences
+            ),
+            Math.min(
+               ...args.cardinalPreferences
+            )
+         ]
+         : args.strategy === 'J'
+         ? [
+            topCandidates[1].map(
+               (candidate) => args.cardinalPreferences[candidate]
+            ),
+            calcAverage(
+               args.cardinalPreferences
+            )
+         ]
          : args.strategy === 'T'
          ? [
             Math.max(
@@ -88,6 +107,12 @@
                      (candidate) => args.cardinalPreferences[candidate]
                   )
                )
+            )
+         ]
+         : args.strategy === 'Z'
+         ? [
+            calcAverage(
+               args.cardinalPreferences
             )
          ]
          : topCandidates.map(
@@ -140,36 +165,124 @@
       poll: poll,
       lastBallot: lastBallot
    });
-   console.log('ballotA:', ballotA);
+   console.log('ballotA:', ballotA, {
+      approved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotA[candidate] > 0.5
+      ).toSorted(
+         (x, y) => y - x
+      ),
+      disapproved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotA[candidate] < 0.5
+      ).toSorted(
+         (x, y) => y - x
+      )
+   });
    const ballotB = findStrategicBallot({
       strategy: 'B',
       cardinalPreferences: cardinalPreferences,
       poll: poll,
       lastBallot: lastBallot
    });
-   console.log('ballotB:', ballotB);
+   console.log('ballotB:', ballotB, {
+      approved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotB[candidate] > 0.5
+      ).toSorted(
+         (x, y) => y - x
+      ),
+      disapproved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotB[candidate] < 0.5
+      ).toSorted(
+         (x, y) => y - x
+      )
+   });
+   const ballotF = findStrategicBallot({
+      strategy: 'F',
+      cardinalPreferences: cardinalPreferences,
+      poll: poll,
+      lastBallot: lastBallot
+   });
+   console.log('ballotF:', ballotF, {
+      approved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotF[candidate] > 0.5
+      ).toSorted(
+         (x, y) => y - x
+      ),
+      disapproved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotF[candidate] < 0.5
+      ).toSorted(
+         (x, y) => y - x
+      )
+   });
+   const ballotJ = findStrategicBallot({
+      strategy: 'J',
+      cardinalPreferences: cardinalPreferences,
+      poll: poll,
+      lastBallot: lastBallot
+   });
+   console.log('ballotJ:', ballotJ, {
+      approved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotJ[candidate] > 0.5
+      ).toSorted(
+         (x, y) => y - x
+      ),
+      disapproved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotJ[candidate] < 0.5
+      ).toSorted(
+         (x, y) => y - x
+      )
+   });
    const ballotT = findStrategicBallot({
       strategy: 'T',
       cardinalPreferences: cardinalPreferences,
       poll: poll,
       lastBallot: lastBallot
    });
-   console.log('ballotT:', ballotT);
+   console.log('ballotT:', ballotT, {
+      approved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotT[candidate] > 0.5
+      ).toSorted(
+         (x, y) => y - x
+      ),
+      disapproved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotT[candidate] < 0.5
+      ).toSorted(
+         (x, y) => y - x
+      )
+   });
    const ballotW = findStrategicBallot({
       strategy: 'W',
       cardinalPreferences: cardinalPreferences,
       poll: poll,
       lastBallot: lastBallot
    });
-   console.log('ballotW:', ballotW);
-   console.log('strategy W approves:', cardinalPreferences.filter(
-      (ignore, candidate) => ballotW[candidate] > 0.5
-   ).toSorted(
-      (x, y) => y - x
-   ));
-   console.log('strategy W disapproves:', cardinalPreferences.filter(
-      (ignore, candidate) => ballotW[candidate] < 0.5
-   ).toSorted(
-      (x, y) => y - x
-   ));
+   console.log('ballotW:', ballotW, {
+      approved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotW[candidate] > 0.5
+      ).toSorted(
+         (x, y) => y - x
+      ),
+      disapproved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotW[candidate] < 0.5
+      ).toSorted(
+         (x, y) => y - x
+      )
+   });
+   const ballotZ = findStrategicBallot({
+      strategy: 'Z',
+      cardinalPreferences: cardinalPreferences,
+      poll: poll,
+      lastBallot: lastBallot
+   });
+   console.log('ballotZ:', ballotZ, {
+      approved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotZ[candidate] > 0.5
+      ).toSorted(
+         (x, y) => y - x
+      ),
+      disapproved: cardinalPreferences.filter(
+         (ignore, candidate) => ballotZ[candidate] < 0.5
+      ).toSorted(
+         (x, y) => y - x
+      )
+   });
 }());
