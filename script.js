@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/tiboyoqude/edit?js,console
-// old: https://jsbin.com/siqasuxiyo/edit?js,console
+// https://jsbin.com/mikifufamu/edit?js,console
+// old: https://jsbin.com/tiboyoqude/edit?js,console
+// older: https://jsbin.com/siqasuxiyo/edit?js,console
 // older: https://jsbin.com/hedaluquce/edit?js,console
 // older: https://jsbin.com/jebiputove/edit?js,console
 // older: https://jsbin.com/durayeseke/edit?js,console
@@ -58,7 +59,6 @@
       const candidates = args.poll.map(
          (ignore, index) => index
       );
-      console.log('candidates:', candidates);
       const orderedPollTotals = args.poll.toSorted(
          (x, y) => y - x
       );
@@ -74,6 +74,17 @@
          ? [
             topCandidates[1].map(
                (candidate) => args.cardinalPreferences[candidate]
+            )
+         ]
+         : args.strategy === 'D'
+         ? [
+            calcAverage(
+               topCandidates[0].map(
+                  (candidate) => args.cardinalPreferences[candidate]
+               )
+            ),
+            ...args.cardinalPreferences.toSorted(
+               (x, y) => x - y
             )
          ]
          : args.strategy === 'F'
@@ -94,6 +105,17 @@
             ),
             calcAverage(
                args.cardinalPreferences
+            )
+         ]
+         : args.strategy === 'Q'
+         ? [
+            calcAverage(
+               topCandidates[0].map(
+                  (candidate) => args.cardinalPreferences[candidate]
+               )
+            ),
+            ...args.cardinalPreferences.toSorted(
+               (x, y) => y - x
             )
          ]
          : args.strategy === 'R'
@@ -157,6 +179,9 @@
 
    const printStrategyResults = function (args) {
       console.log('--------- STRATEGY ' + args.strategy + ': ---------');
+      console.log('cardinalPreferences:', args.cardinalPreferences);
+      console.log('poll:', args.poll);
+      console.log('lastBallot:', args.lastBallot);
       const ballot = findStrategicBallot(args);
       console.log(
          'ballot:',
@@ -186,10 +211,7 @@
       () => Math.floor(Math.random() * 11)
    );
    const lastBallot = cardinalPreferences.map(() => 0.5);
-   console.log('cardinalPreferences:', cardinalPreferences);
-   console.log('poll:', poll);
-   console.log('lastBallot:', lastBallot);
-   const strategies = 'ABFHJRTWZ';
+   const strategies = 'ABDFHJQRTWZ';
    [...strategies].forEach(function (strategy) {
       printStrategyResults({
          cardinalPreferences: cardinalPreferences,
