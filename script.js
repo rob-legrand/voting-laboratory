@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/memaqiqaka/edit?js,console
-// old: https://jsbin.com/mikifufamu/edit?js,console
+// https://jsbin.com/yavugajuqa/edit?js,console
+// old: https://jsbin.com/memaqiqaka/edit?js,console
+// older: https://jsbin.com/mikifufamu/edit?js,console
 // older: https://jsbin.com/tiboyoqude/edit?js,console
 // older: https://jsbin.com/siqasuxiyo/edit?js,console
 // older: https://jsbin.com/hedaluquce/edit?js,console
@@ -17,6 +18,12 @@
       (totalSoFar, element) => totalSoFar + element,
       0
    ) / array.length;
+
+   const calcMedians = (array) => (
+      array.length > 2
+      ? calcMedians(array.slice(1, -1))
+      : array
+   );
 
    const calcRange = (array) => Math.max(
       ...array
@@ -97,12 +104,29 @@
             (x, y) => y - x
          )
          : args.strategy === 'H'
-         ? [args.cardinalPreferences.toSorted(
-            (x, y) => y - x
-         ).slice(
-            Math.floor((args.cardinalPreferences.length - 1) / 2),
-            Math.ceil((args.cardinalPreferences.length + 1) / 2)
-         )]
+         ? [
+            calcMedians(
+               args.cardinalPreferences.toSorted(
+                  (x, y) => y - x
+               )
+            )
+         ]
+         : args.strategy === 'I'
+         ? [
+            topCandidates[1].map(
+               (candidate) => args.cardinalPreferences[candidate]
+            )
+         ]
+         : args.strategy === 'K'
+         ? [
+            topCandidates[1].map(
+               (candidate) => args.cardinalPreferences[candidate]
+            ),
+            calcAverage([
+               Math.min(...args.cardinalPreferences),
+               Math.max(...args.cardinalPreferences)
+            ])
+         ]
          : args.strategy === 'Q'
          ? [
             calcAverage(
@@ -215,7 +239,7 @@
       () => Math.floor(Math.random() * 11)
    );
    const lastBallot = cardinalPreferences.map(() => 0.5);
-   const strategies = 'ABDFHJQRTWZ';
+   const strategies = 'ABDFHIJKQRTWZ';
    [...strategies].forEach(function (strategy) {
       console.log('--------- STRATEGY ' + strategy + ': ---------');
       console.log('cardinalPreferences:', cardinalPreferences);
