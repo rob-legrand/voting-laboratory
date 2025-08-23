@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/yavugajuqa/edit?js,console
-// old: https://jsbin.com/memaqiqaka/edit?js,console
+// https://jsbin.com/viherahire/edit?js,console
+// old: https://jsbin.com/yavugajuqa/edit?js,console
+// older: https://jsbin.com/memaqiqaka/edit?js,console
 // older: https://jsbin.com/mikifufamu/edit?js,console
 // older: https://jsbin.com/tiboyoqude/edit?js,console
 // older: https://jsbin.com/siqasuxiyo/edit?js,console
@@ -127,6 +128,21 @@
                Math.max(...args.cardinalPreferences)
             ])
          ]
+         : args.strategy === 'L'
+         ? [
+            Math.min(
+               ...topCandidates[1].map(
+                  (candidate) => args.cardinalPreferences[candidate]
+               )
+            ),
+            ...topCandidates.map(
+               (candidateSet) => calcAverage(
+                  candidateSet.map(
+                     (candidate) => args.cardinalPreferences[candidate]
+                  )
+               )
+            )
+         ]
          : args.strategy === 'Q'
          ? [
             calcAverage(
@@ -239,7 +255,7 @@
       () => Math.floor(Math.random() * 11)
    );
    const lastBallot = cardinalPreferences.map(() => 0.5);
-   const strategies = 'ABDFHIJKQRTWZ';
+   const strategies = 'ABDFHIJKLQRTWZ';
    [...strategies].forEach(function (strategy) {
       console.log('--------- STRATEGY ' + strategy + ': ---------');
       console.log('cardinalPreferences:', cardinalPreferences);
