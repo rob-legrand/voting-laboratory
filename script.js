@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/viherahire/edit?js,console
-// old: https://jsbin.com/yavugajuqa/edit?js,console
+// https://jsbin.com/roraxacijo/edit?js,console
+// old: https://jsbin.com/viherahire/edit?js,console
+// older: https://jsbin.com/yavugajuqa/edit?js,console
 // older: https://jsbin.com/memaqiqaka/edit?js,console
 // older: https://jsbin.com/mikifufamu/edit?js,console
 // older: https://jsbin.com/tiboyoqude/edit?js,console
@@ -143,6 +144,14 @@
                )
             )
          ]
+         : args.strategy === 'M'
+         ? topCandidates.slice(1).map(
+            (candidateSet) => calcAverage(
+               candidateSet.map(
+                  (candidate) => args.cardinalPreferences[candidate]
+               )
+            )
+         )
          : args.strategy === 'Q'
          ? [
             calcAverage(
@@ -170,6 +179,25 @@
             Math.max(
                ...topCandidates[1].map(
                   (candidate) => args.cardinalPreferences[candidate]
+               )
+            ),
+            ...topCandidates.map(
+               (candidateSet) => calcAverage(
+                  candidateSet.map(
+                     (candidate) => args.cardinalPreferences[candidate]
+                  )
+               )
+            )
+         ]
+         : args.strategy === 'V'
+         ? [
+            Math.max(
+               ...topCandidates.slice(0, 2).map(
+                  (candidateSet) => calcAverage(
+                     candidateSet.map(
+                        (candidate) => args.cardinalPreferences[candidate]
+                     )
+                  )
                )
             ),
             ...topCandidates.map(
@@ -255,8 +283,8 @@
       () => Math.floor(Math.random() * 11)
    );
    const lastBallot = cardinalPreferences.map(() => 0.5);
-   const strategies = 'ABDFHIJKLQRTWZ';
-   [...strategies].forEach(function (strategy) {
+   const strategies = 'ABDFHIJKLMQRTVWZ';
+   [...strategies].toSorted().forEach(function (strategy) {
       console.log('--------- STRATEGY ' + strategy + ': ---------');
       console.log('cardinalPreferences:', cardinalPreferences);
       console.log('poll:', poll);
