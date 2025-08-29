@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/roraxacijo/edit?js,console
-// old: https://jsbin.com/viherahire/edit?js,console
+// https://jsbin.com/xajizilari/edit?js,console
+// old: https://jsbin.com/roraxacijo/edit?js,console
+// older: https://jsbin.com/viherahire/edit?js,console
 // older: https://jsbin.com/yavugajuqa/edit?js,console
 // older: https://jsbin.com/memaqiqaka/edit?js,console
 // older: https://jsbin.com/mikifufamu/edit?js,console
@@ -90,7 +91,26 @@
          console.log('topCandidates:', topCandidates);
       }
       const cutoffs = (
-         args.strategy === 'D'
+         (
+            args.strategy === 'B'
+            || args.strategy === 'J'
+            || args.strategy === 'T'
+         )
+         ? [
+            Math.max(
+               ...topCandidates[1].map(
+                  (candidate) => args.cardinalPreferences[candidate]
+               )
+            ),
+            ...topCandidates.map(
+               (candidateSet) => calcAverage(
+                  candidateSet.map(
+                     (candidate) => args.cardinalPreferences[candidate]
+                  )
+               )
+            )
+         ]
+         : args.strategy === 'D'
          ? [
             calcAverage(
                topCandidates[0].map(
@@ -170,25 +190,10 @@
                Math.max(...args.cardinalPreferences)
             ])
          ]
-         : (
-            args.strategy === 'B'
-            || args.strategy === 'J'
-            || args.strategy === 'T'
+         : args.strategy === 'U'
+         ? args.cardinalPreferences.toSorted(
+            (x, y) => x - y
          )
-         ? [
-            Math.max(
-               ...topCandidates[1].map(
-                  (candidate) => args.cardinalPreferences[candidate]
-               )
-            ),
-            ...topCandidates.map(
-               (candidateSet) => calcAverage(
-                  candidateSet.map(
-                     (candidate) => args.cardinalPreferences[candidate]
-                  )
-               )
-            )
-         ]
          : args.strategy === 'V'
          ? [
             Math.max(
@@ -283,7 +288,7 @@
       () => Math.floor(Math.random() * 11)
    );
    const lastBallot = cardinalPreferences.map(() => 0.5);
-   const strategies = 'ABDFHIJKLMQRTVWZ';
+   const strategies = 'ABDFHIJKLMQRTUVWZ';
    [...strategies].toSorted().forEach(function (strategy) {
       console.log('--------- STRATEGY ' + strategy + ': ---------');
       console.log('cardinalPreferences:', cardinalPreferences);
