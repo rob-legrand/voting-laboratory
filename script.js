@@ -1,7 +1,8 @@
 /*jslint devel */
 /*jshint esnext: true */
-// https://jsbin.com/xajizilari/edit?js,console
-// old: https://jsbin.com/roraxacijo/edit?js,console
+// https://jsbin.com/howeponave/edit?js,console
+// old: https://jsbin.com/xajizilari/edit?js,console
+// older: https://jsbin.com/roraxacijo/edit?js,console
 // older: https://jsbin.com/viherahire/edit?js,console
 // older: https://jsbin.com/yavugajuqa/edit?js,console
 // older: https://jsbin.com/memaqiqaka/edit?js,console
@@ -172,6 +173,15 @@
                )
             )
          )
+         : args.strategy === 'O'
+         ? [
+            topCandidates[1].map(
+               (candidate) => args.cardinalPreferences[candidate]
+            ),
+            calcAverage(
+               args.cardinalPreferences
+            )
+         ]
          : args.strategy === 'Q'
          ? [
             calcAverage(
@@ -287,7 +297,7 @@
       () => Math.floor(Math.random() * 11)
    );
    const lastBallot = cardinalPreferences.map(() => 0.5);
-   const strategies = 'ABDFHIJKLMQRTUVWZ';
+   const strategies = 'ABDFHIJKLMOQRTUVWZ';
    [...strategies].toSorted().forEach(function (strategy) {
       console.log('--------- STRATEGY ' + strategy + ': ---------');
       console.log('cardinalPreferences:', cardinalPreferences);
