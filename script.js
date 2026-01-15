@@ -283,8 +283,7 @@
       {length: numCandidates},
       () => Math.floor(Math.random() * 101)
    );
-   const poll = Array.from(
-      {length: numCandidates},
+   const poll = cardinalPreferences.map(
       () => Math.floor(Math.random() * 11)
    );
    const lastBallot = cardinalPreferences.map(() => 0.5);
